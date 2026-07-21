@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pontos">
+<meta name="theme-color" content="#0b1220">
+<title>Pontos da Família — João Neto & Liz</title>
+<style>
+  :root{--bg:#0b1220;--panel:#111b2e;--panel2:#0e1728;--line:#1e2c47;--txt:#e7edf7;--mut:#93a4c0;
+    --joao:#22c55e;--liz:#ec4899;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#152238 0%,var(--bg) 60%);
+    color:var(--txt);min-height:100vh;padding:18px 14px 60px;line-height:1.5;
+    padding-top:max(18px,env(safe-area-inset-top))}
+  .wrap{max-width:1040px;margin:0 auto}
+  #setup{position:fixed;inset:0;z-index:100;background:radial-gradient(900px 500px at 50% -10%,#182a44,#0a1120 70%);
+    display:flex;align-items:center;justify-content:center;padding:20px}
+  .setup-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:26px;max-width:440px;width:100%;box-shadow:0 30px 60px -20px rgba(0,0,0,.8)}
+  .setup-card h1{font-size:24px;margin-bottom:6px;background:linear-gradient(90deg,#7dd3fc,#a78bfa,#f472b6);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .setup-card p{color:var(--mut);font-size:14px;margin-bottom:18px}
+  .setup-card .big{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:800;
+    cursor:pointer;margin-bottom:10px}
+  .b-primary{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff}
+  .b-second{background:#182a44;color:var(--txt);border:1px solid var(--line)!important}
+  .b-ghost{background:transparent;color:var(--mut);font-weight:700;font-size:13px}
+  .join-row{display:none;gap:8px;margin-bottom:10px}
+  .join-row input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:12px;color:var(--txt);font-size:15px}
+  .join-row button{background:#16a34a;color:#fff;border:none;border-radius:10px;padding:0 16px;font-weight:800;cursor:pointer}
+  .setup-msg{font-size:13px;min-height:18px;margin-top:4px}
+  .setup-msg.err{color:#f87171}.setup-msg.ok{color:#4ade80}
+  .syncbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px;font-size:13px}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e}
+  .dot.off{background:#f59e0b} .dot.local{background:#64748b}
+  .syncbar .lbl{color:var(--mut)}
+  .syncbar .code{font-weight:800;letter-spacing:.5px;color:var(--txt);
+    background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:3px 8px}
+  .syncbar button{margin-left:auto;background:rgba(255,255,255,.06);color:var(--txt);
+    border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12px;font-weight:700;cursor:pointer}
+  .syncbar button+button{margin-left:6px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+  h1.title{font-size:24px;font-weight:900;background:linear-gradient(90deg,#7dd3fc,#a78bfa,#f472b6);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .date{color:var(--mut);font-size:13px}
+  .top-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .ghost{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--line);
+    border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer}
+  .ghost:hover{background:rgba(255,255,255,.12)}
+  .rules{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:12px 16px;margin:12px 0 18px;font-size:13px;color:var(--mut)}
+  .rules b{color:var(--txt)}
+  .kids{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:780px){.kids{grid-template-columns:1fr}}
+  .card{position:relative;overflow:hidden;border-radius:20px;padding:20px;border:1px solid var(--line);
+    box-shadow:0 20px 40px -20px rgba(0,0,0,.7)}
+  .card.joao{background:radial-gradient(600px 300px at 90% -20%,rgba(34,197,94,.25),transparent 60%),
+    linear-gradient(165deg,#0d1f16,#0b1a13 70%);border-color:#1f5136}
+  .card.liz{background:radial-gradient(600px 300px at 90% -20%,rgba(236,72,153,.28),transparent 60%),
+    linear-gradient(165deg,#2a0f1d,#1c0a14 70%);border-color:#5a2140}
+  .deco{position:absolute;pointer-events:none}
+  .deco.d1{font-size:92px;top:-12px;right:8px;opacity:.20;animation:float 6s ease-in-out infinite}
+  .deco.d2{font-size:56px;bottom:120px;left:-8px;opacity:.15;animation:float 7s ease-in-out infinite reverse}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+  .head{display:flex;align-items:center;gap:12px;position:relative;z-index:2}
+  .avatar{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:29px;flex:none}
+  .joao .avatar{background:linear-gradient(160deg,#16351f,#0c2013);border:1px solid #2f7a4c}
+  .liz .avatar{background:linear-gradient(160deg,#3a1226,#26101a);border:1px solid #a84073}
+  .who .nm{font-size:20px;font-weight:900}.who .bd{font-size:12px;color:var(--mut);font-weight:700}
+  .level{margin-left:auto;text-align:right}.level .lv{font-size:12px;color:var(--mut)}
+  .level .lvn{font-size:15px;font-weight:900}.joao .lvn{color:var(--joao)}.liz .lvn{color:var(--liz)}
+  .scoreline{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px;position:relative;z-index:2}
+  .score{font-size:50px;font-weight:900;letter-spacing:-1px}
+  .joao .score{color:var(--joao)}.liz .score{color:var(--liz)}
+  .score-lbl{color:var(--mut);font-size:13px}
+  .week{margin-left:auto;font-size:12px;color:var(--mut);text-align:right}.week b{color:var(--txt)}
+  .goal{position:relative;z-index:2;margin:12px 0 4px}
+  .goal-bar{height:14px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .goal-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .joao .goal-fill{background:linear-gradient(90deg,#16a34a,#4ade80)}
+  .liz .goal-fill{background:linear-gradient(90deg,#db2777,#f9a8d4)}
+  .goal-txt{font-size:12px;color:var(--mut);margin-top:5px;display:flex;justify-content:space-between;gap:8px}
+  .goal-txt .reward{cursor:pointer;text-decoration:underline dotted;text-align:right}
+  .section-t{font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);
+    margin:15px 0 7px;position:relative;z-index:2}
+  .tasks{display:flex;flex-direction:column;gap:7px;position:relative;z-index:2}
+  .task-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:8px 10px}
+  .task-name{flex:1;font-size:14px}
+  .pts{font-size:11px;color:var(--mut);min-width:30px;text-align:center}
+  .btn{border:none;border-radius:10px;padding:8px 13px;font-size:15px;font-weight:900;cursor:pointer;
+    transition:transform .06s,filter .12s}
+  .btn:active{transform:scale(.9)}.btn:hover{filter:brightness(1.1)}
+  .plus{background:#16a34a;color:#fff}.minus{background:#dc2626;color:#fff}
+  .swear{width:100%;margin-top:12px;background:#7c2d12;color:#fff;padding:11px;border-radius:12px;
+    position:relative;z-index:2}
+  .punish-box{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:14px;
+    background:rgba(0,0,0,.28);position:relative;z-index:2}
+  .punish-title{font-weight:900;font-size:13px;margin-bottom:8px;color:#fca5a5}
+  .punish-status{font-size:13px;color:var(--mut);margin-bottom:10px}
+  .punish-status b{color:#fca5a5}.punish-status.free b{color:#86efac}
+  .active-punish{background:linear-gradient(160deg,#3b0d0d,#2a0808);border:1px solid #7f1d1d;
+    border-radius:12px;padding:10px 12px;margin-bottom:10px}
+  .active-punish .cd{font-size:22px;font-weight:900;color:#fecaca;font-variant-numeric:tabular-nums}
+  .active-punish .rt{font-size:12px;color:#fca5a5;margin-top:2px}
+  .prow{display:flex;gap:8px}.punish-btn{flex:1;background:#ea580c;color:#fff}.free-btn{background:#166534;color:#dcfce7}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+  @media(max-width:780px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .panel h2{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .mama textarea{width:100%;min-height:120px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:12px;color:var(--txt);font-family:inherit;font-size:14px;resize:vertical}
+  .saved-tag{font-size:12px;color:#4ade80;height:16px;margin-top:6px}
+  .plan-add{display:flex;gap:8px;margin-bottom:12px}
+  .plan-add input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;color:var(--txt);font-size:14px}
+  .plan-add input::placeholder{color:#5b6b86}.plan-add .btn{background:#2563eb;color:#fff}
+  .plan-list{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow:auto}
+  .plan-item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:9px 12px}
+  .plan-item input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#22c55e}
+  .plan-item span{flex:1;font-size:14px}.plan-item.done span{text-decoration:line-through;color:var(--mut)}
+  .plan-item .del{background:rgba(220,38,38,.15);color:#f87171;padding:4px 9px;font-size:12px}
+  .log{margin-top:18px}
+  .log-item{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .log-item:last-child{border:none}
+  .log-when{color:#5b6b86;font-size:12px;white-space:nowrap}
+  .log-pts{font-weight:800;white-space:nowrap}.log-pos{color:#4ade80}.log-neg{color:#f87171}
+  .empty{color:var(--mut);text-align:center;padding:14px;font-size:13px}
+  .tools{text-align:center;margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .float{position:fixed;z-index:60;font-weight:900;font-size:24px;pointer-events:none;animation:up 1s ease-out forwards}
+  @keyframes up{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-46px) scale(1.3)}}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="setup">
+  <div class="setup-card">
+    <h1>⭐ Pontos da Família</h1>
+    <p>Para a mamãe e o papai verem o <b>mesmo placar</b> nos dois celulares, comecem uma família aqui. É só uma vez.</p>
+    <button class="big b-primary" onclick="criarFamilia()">✨ Criar nova família</button>
+    <button class="big b-second" onclick="mostrarJoin()">🔑 Entrar com um código</button>
+    <div class="join-row" id="joinRow">
+      <input id="joinInput" type="text" inputmode="text" placeholder="Cole o código da família aqui">
+      <button onclick="entrarFamilia()">Entrar</button>
+    </div>
+    <div class="setup-msg" id="setupMsg"></div>
+    <button class="big b-ghost" onclick="usarLocal()">Usar só neste celular (sem sincronizar)</button>
+  </div>
+</div>
+<canvas id="confetti"></canvas>
+<div class="wrap" id="app" style="display:none">
+  <div class="syncbar" id="syncbar"></div>
+  <header class="top">
+    <div><h1 class="title">⭐ Pontos da Família</h1><div class="date" id="today"></div></div>
+    <div class="top-actions">
+      <button class="ghost" id="soundBtn" onclick="toggleSound()">🔊 Som: ligado</button>
+      <button class="ghost" onclick="novaSemana()">🗓️ Nova semana</button>
+      <button class="ghost" onclick="window.print()">🖨️ Relatório</button>
+    </div>
+  </header>
+  <div class="rules">
+    <b>Regras:</b> tarefa cumprida <b>+10</b> · palavrão <b>−10</b> · sobe de nível a cada <b>50</b> pontos ·
+    prêmio ao bater a <b>meta de 100</b> 🎁. Tarefa não feita na hora/no dia = <b>punição</b>:
+    1ª vez <b>24 h sem telefone</b>, depois aumenta (48 h, 72 h...). Aparece a contagem de quando o telefone volta.
+  </div>
+  <div class="kids" id="kids"></div>
+  <div class="grid2">
+    <div class="panel mama">
+      <h2>📝 Anotações da mamãe</h2>
+      <textarea id="notas" placeholder="Ex.: João terminar o projeto até sexta. Liz — guardar as bonecas antes de dormir..."></textarea>
+      <div class="saved-tag" id="notasTag"></div>
+    </div>
+    <div class="panel">
+      <h2>📅 Planos & combinados</h2>
+      <div class="plan-add">
+        <input id="planInput" type="text" placeholder="Ex.: sábado organizar o quarto" onkeydown="if(event.key==='Enter')addPlano()">
+        <button class="btn" onclick="addPlano()">Adicionar</button>
+      </div>
+      <div class="plan-list" id="planList"></div>
+    </div>
+  </div>
+  <div class="panel log">
+    <h2>📜 Histórico</h2>
+    <div id="logList"></div>
+    <div class="tools">
+      <button class="ghost" onclick="limparHistorico()">Limpar histórico</button>
+      <button class="ghost" onclick="zerarTudo()">Zerar tudo</button>
+    </div>
+  </div>
+</div>
+<script>
+  const TAREFAS=[
+    {grupo:"Tarefas de casa",itens:["Arrumar o quarto","Ajudar na limpeza","Lavar/guardar a louça"]},
+    {grupo:"Escola / lição",itens:["Fazer a lição de casa","Estudar / ler"]},
+    {grupo:"Comportamento",itens:["Foi educado(a) e obediente","Ajudou a família"]},
+    {grupo:"Higiene / rotina",itens:["Escovar os dentes","Tomar banho","Organizar a mochila"]}
+  ];
+  const FILHOS=[
+    {id:"joao",nome:"João Neto",badge:"🦖 Time Dino / Godzilla",avatar:"🦖",d1:"🦖",d2:"🦕"},
+    {id:"liz",nome:"Liz",badge:"💖 Time Barbie",avatar:"👑",d1:"💖",d2:"👑"}
+  ];
+  const PONTO=10, META=100, PONTOS_NIVEL=50;
+  const KEY="pontosFam3", CODEKEY="famCode", LOCALKEY="famLocalOnly", DEVKEY="famDev";
+  const LS=(function(){
+    let ok=false, mem={};
+    try{const t="__t";window.localStorage.setItem(t,"1");window.localStorage.removeItem(t);ok=true;}catch(e){ok=false;}
+    return {
+      ok,
+      get(k){try{return ok?window.localStorage.getItem(k):(k in mem?mem[k]:null);}catch(e){return k in mem?mem[k]:null;}},
+      set(k,v){try{if(ok)window.localStorage.setItem(k,v);else mem[k]=String(v);}catch(e){mem[k]=String(v);}},
+      del(k){try{if(ok)window.localStorage.removeItem(k);else delete mem[k];}catch(e){delete mem[k];}}
+    };
+  })();
+  const DEV=(function(){let d=LS.get(DEVKEY);
+    if(!d){d=(crypto&&crypto.randomUUID?crypto.randomUUID():String(Math.random())).slice(0,8);LS.set(DEVKEY,d);}return d;})();
+  function padrao(){return{
+    pontos:{joao:0,liz:0}, semana:{joao:0,liz:0}, punicoes:{joao:0,liz:0},
+    fimPunicao:{joao:null,liz:null}, premios:{joao:"1 h de jogo extra",liz:"1 passeio especial"},
+    historico:[], notas:"", planos:[], som:true, _meta:{ts:0,dev:DEV}
+  };}
+  let estado=carregar();
+  function carregar(){try{const r=LS.get(KEY);if(r)return Object.assign(padrao(),JSON.parse(r));}catch(e){}return padrao();}
+  function saveLocal(){try{LS.set(KEY,JSON.stringify(estado));}catch(e){}}
+  function salvar(){estado._meta={ts:Date.now(),dev:DEV};saveLocal();scheduledPush();render();}
+  const SYNC={
+    base:"https://jsonblob.com/api/jsonBlob", code:null, online:false, mode:"setup",
+    setOnline(v){if(this.online!==v){this.online=v;drawSyncbar();}},
+    async create(){
+      const r=await fetch(this.base,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(estado)});
+      if(!r.ok) throw new Error("http "+r.status);
+      let loc=r.headers.get("Location")||r.headers.get("location")||r.url||"";
+      let id=(loc.split("/").pop()||"").trim();
+      if(!id||id==="jsonBlob"){ try{const b=await r.clone().json(); if(b&&b.id) id=String(b.id); }catch(e){} }
+      if(!id||id==="jsonBlob") throw new Error("sem id");
+      return id;
+    },
+    async pull(){const r=await fetch(this.base+"/"+this.code,{headers:{"Accept":"application/json"},cache:"no-store"});
+      if(!r.ok) throw new Error("http "+r.status);return await r.json();},
+    async push(st){const r=await fetch(this.base+"/"+this.code,{method:"PUT",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(st)});
+      if(!r.ok) throw new Error("http "+r.status);}
+  };
+  let pushTimer=null, pushing=false;
+  function scheduledPush(){ if(SYNC.mode!=="sync"||!SYNC.code)return;
+    clearTimeout(pushTimer); pushTimer=setTimeout(doPush,600); }
+  async function doPush(){ if(SYNC.mode!=="sync"||!SYNC.code||pushing)return; pushing=true;
+    try{await SYNC.push(estado);SYNC.setOnline(true);}catch(e){SYNC.setOnline(false);}finally{pushing=false;} }
+  async function poll(){ if(SYNC.mode!=="sync"||!SYNC.code)return;
+    try{const remote=await SYNC.pull();SYNC.setOnline(true);
+      if(remote&&remote._meta&&(!estado._meta||remote._meta.ts>estado._meta.ts)){
+        estado=Object.assign(padrao(),remote);saveLocal();render();updateNotas();}
+    }catch(e){SYNC.setOnline(false);} }
+  setInterval(poll,3500);
+  function setupMsg(t,cls){const m=document.getElementById("setupMsg");m.textContent=t||"";m.className="setup-msg "+(cls||"");}
+  function mostrarJoin(){const r=document.getElementById("joinRow");r.style.display="flex";document.getElementById("joinInput").focus();}
+  async function criarFamilia(){
+    setupMsg("Criando sua família...","");
+    try{ estado=padrao(); estado._meta={ts:Date.now(),dev:DEV};
+      const id=await SYNC.create(); SYNC.code=id; SYNC.mode="sync";
+      LS.set(CODEKEY,id); LS.del(LOCALKEY); saveLocal();
+      entrarNoApp();
+    }catch(e){
+      setupMsg("Sem conexão com a sincronização agora — abri o app só neste celular. Toque em “Ativar sincronização” quando estiver online.","err");
+      setTimeout(()=>{ SYNC.mode="local"; LS.set(LOCALKEY,"1"); entrarNoApp(); },1600);
+    }
+  }
+  async function entrarFamilia(){
+    const raw=document.getElementById("joinInput").value.trim();
+    const id=(raw.split("/").pop()||"").trim();
+    if(!id){setupMsg("Cole o código da família.","err");return;}
+    setupMsg("Entrando...","");
+    SYNC.code=id;
+    try{ const remote=await SYNC.pull();
+      estado=Object.assign(padrao(),remote); SYNC.mode="sync";
+      LS.set(CODEKEY,id); LS.del(LOCALKEY); saveLocal();
+      entrarNoApp();
+    }catch(e){ SYNC.code=null; setupMsg("Código não encontrado ou sem internet. Confira e tente de novo.","err"); }
+  }
+  function usarLocal(){ SYNC.mode="local"; LS.set(LOCALKEY,"1"); LS.del(CODEKEY); entrarNoApp(); }
+  function entrarNoApp(){
+    document.getElementById("setup").style.display="none";
+    document.getElementById("app").style.display="block";
+    drawSyncbar(); bindNotas(); render();
+    if(SYNC.mode==="sync"){SYNC.setOnline(true);poll();doPush();}
+  }
+  function drawSyncbar(){
+    const bar=document.getElementById("syncbar");
+    if(SYNC.mode==="local"){
+      bar.innerHTML='<span class="dot local"></span><span class="lbl">Só neste celular (não sincroniza)</span>'+
+        '<button onclick="ativarSync()">Ativar sincronização</button>';return;
+    }
+    const st=SYNC.online?'<span class="dot on"></span><span class="lbl">Sincronizado</span>'
+                        :'<span class="dot off"></span><span class="lbl">Reconectando...</span>';
+    bar.innerHTML=st+'<span class="lbl">· Código:</span><span class="code" id="famCodeTxt">'+escH(SYNC.code||"")+'</span>'+
+      '<button onclick="copiarCodigo()">📋 Copiar</button>'+
+      '<button onclick="compartilhar()">📤 Enviar</button>';
+  }
+  function ativarSync(){LS.del(LOCALKEY);document.getElementById("app").style.display="none";
+    document.getElementById("setup").style.display="flex";SYNC.mode="setup";setupMsg("","");}
+  function copiarCodigo(){const t=SYNC.code||"";
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast("Código copiado!"));}
+    else{prompt("Copie o código da família:",t);} }
+  function compartilhar(){const t=SYNC.code||"";const msg="Código da nossa família no app de Pontos: "+t;
+    if(navigator.share){navigator.share({title:"Pontos da Família",text:msg}).catch(()=>{});}
+    else{copiarCodigo();} }
+  function toast(t){floaty(t,"#7dd3fc");}
+  const nivel=p=>Math.max(1,Math.floor(p/PONTOS_NIVEL)+1);
+  const horas=n=>24*n;
+  const agora=()=>new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  let AC=null;
+  function beep(freq,dur,type){if(!estado.som)return;
+    try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(),g=AC.createGain();o.type=type||"sine";o.frequency.value=freq;
+    o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+dur);o.start();o.stop(AC.currentTime+dur);}catch(e){}}
+  function toggleSound(){estado.som=!estado.som;
+    document.getElementById("soundBtn").textContent=estado.som?"🔊 Som: ligado":"🔇 Som: desligado";salvar();}
+  function floaty(txt,color){const el=document.createElement("div");el.className="float";el.textContent=txt;el.style.color=color;
+    el.style.left=(window.innerWidth/2-20+(Math.random()*40-20))+"px";el.style.top=(window.scrollY+130)+"px";
+    document.body.appendChild(el);setTimeout(()=>el.remove(),1000);}
+  function registrar(id,texto,pts){
+    const nAntes=nivel(estado.pontos[id]);
+    const atingiuMeta=estado.pontos[id]<META && estado.pontos[id]+pts>=META;
+    estado.pontos[id]+=pts; estado.semana[id]+=pts;
+    estado.historico.unshift({filho:id,texto,pts,quando:agora()});
+    if(pts>0){beep(880,.12);floaty("+"+pts,"#4ade80");}
+    else if(pts<0){beep(200,.18,"square");floaty(pts,"#f87171");}
+    salvar();
+    if(nivel(estado.pontos[id])>nAntes)beep(1320,.25);
+    if(atingiuMeta){festa();beep(1500,.3);setTimeout(()=>beep(2000,.3),150);}
+  }
+  function addTarefa(id,n){registrar(id,"✅ "+n,+PONTO);}
+  function tirarTarefa(id,n){registrar(id,"↩️ Desfez: "+n,-PONTO);}
+  function palavrao(id){registrar(id,"🤬 Falou palavrão",-PONTO);}
+  function punir(id){
+    const nome=FILHOS.find(f=>f.id===id).nome;
+    const motivo=prompt("Motivo da punição (qual tarefa não foi feita na hora/no dia?)","Não fez a tarefa no prazo");
+    if(motivo===null)return;
+    estado.punicoes[id]+=1;const n=estado.punicoes[id];const h=horas(n);
+    estado.fimPunicao[id]=Date.now()+h*3600*1000;
+    estado.historico.unshift({filho:id,pts:0,texto:"📵 Punição nº "+n+" — "+h+" h sem telefone ("+motivo+")",quando:agora()});
+    beep(140,.4,"sawtooth");salvar();
+    alert(nome+" fica "+h+" HORAS sem telefone.\nTelefone volta: "+new Date(estado.fimPunicao[id]).toLocaleString("pt-BR"));
+  }
+  function liberar(id){if(confirm("Liberar o telefone agora?")){estado.fimPunicao[id]=null;
+    estado.historico.unshift({filho:id,pts:0,texto:"✅ Telefone liberado",quando:agora()});salvar();}}
+  function editarPremio(id){const p=prompt("Prêmio ao bater a meta de "+META+" pontos:",estado.premios[id]);
+    if(p!==null){estado.premios[id]=p;salvar();}}
+  let notaTimer=null;
+  function bindNotas(){const ta=document.getElementById("notas");ta.value=estado.notas||"";
+    ta.addEventListener("input",()=>{estado.notas=ta.value;
+      const t=document.getElementById("notasTag");t.textContent="✓ salvo";
+      clearTimeout(notaTimer);notaTimer=setTimeout(()=>t.textContent="",1200);
+      estado._meta={ts:Date.now(),dev:DEV};saveLocal();scheduledPush();});}
+  function updateNotas(){const ta=document.getElementById("notas");if(ta&&document.activeElement!==ta)ta.value=estado.notas||"";}
+  function addPlano(){const i=document.getElementById("planInput");const t=i.value.trim();if(!t)return;
+    estado.planos.push({texto:t,feito:false});i.value="";salvar();}
+  function togglePlano(i){estado.planos[i].feito=!estado.planos[i].feito;salvar();}
+  function delPlano(i){estado.planos.splice(i,1);salvar();}
+  function renderPlanos(){const l=document.getElementById("planList");
+    if(!estado.planos.length){l.innerHTML='<div class="empty">Nenhum plano ainda.</div>';return;}
+    l.innerHTML=estado.planos.map((p,i)=>'<div class="plan-item '+(p.feito?'done':'')+'">'+
+      '<input type="checkbox" '+(p.feito?'checked':'')+' onchange="togglePlano('+i+')">'+
+      '<span>'+escH(p.texto)+'</span><button class="btn del" onclick="delPlano('+i+')">apagar</button></div>').join("");}
+  function novaSemana(){if(confirm("Iniciar nova semana? Zera os pontos DA SEMANA (o total geral continua).")){
+    estado.semana={joao:0,liz:0};estado.historico.unshift({filho:"joao",pts:0,texto:"🗓️ Nova semana iniciada",quando:agora()});salvar();}}
+  function render(){
+    const kids=document.getElementById("kids");if(!kids)return;kids.innerHTML="";
+    FILHOS.forEach(f=>{
+      const pts=estado.pontos[f.id],n=estado.punicoes[f.id],prox=horas(n+1);
+      const pctMeta=Math.max(0,Math.min(100,pts/META*100)),nv=nivel(pts);
+      const fim=estado.fimPunicao[f.id],ativo=fim&&fim>Date.now();
+      let punishStatus=ativo?'':(n===0
+        ?'<div class="punish-status free">Sem punições. 🎉 Se descumprir: <b>'+prox+' h sem telefone</b>.</div>'
+        :'<div class="punish-status">Já teve <b>'+n+'</b> punição(ões). Próxima: <b>'+prox+' h</b>.</div>');
+      let activeBox=ativo?'<div class="active-punish"><div>📵 Sem telefone — falta:</div>'+
+        '<div class="cd" data-fim="'+fim+'" id="cd_'+f.id+'">--:--:--</div>'+
+        '<div class="rt">Volta: '+new Date(fim).toLocaleString("pt-BR")+'</div></div>':'';
+      let tarefasHtml="";
+      TAREFAS.forEach(g=>{tarefasHtml+='<div class="section-t">'+g.grupo+'</div><div class="tasks">';
+        g.itens.forEach(it=>{tarefasHtml+='<div class="task-row"><span class="task-name">'+it+'</span>'+
+          '<button class="btn minus" onclick="tirarTarefa(\''+f.id+'\',\''+esc(it)+'\')">−</button>'+
+          '<span class="pts">+'+PONTO+'</span>'+
+          '<button class="btn plus" onclick="addTarefa(\''+f.id+'\',\''+esc(it)+'\')">+</button></div>';});
+        tarefasHtml+='</div>';});
+      const card=document.createElement("div");card.className="card "+f.id;
+      card.innerHTML='<span class="deco d1">'+f.d1+'</span><span class="deco d2">'+f.d2+'</span>'+
+        '<div class="head"><div class="avatar">'+f.avatar+'</div>'+
+          '<div class="who"><div class="nm">'+f.nome+'</div><div class="bd">'+f.badge+'</div></div>'+
+          '<div class="level"><div class="lv">Nível</div><div class="lvn">'+nv+'</div></div></div>'+
+        '<div class="scoreline"><div class="score">'+pts+'</div><div class="score-lbl">pontos</div>'+
+          '<div class="week">Esta semana<br><b>'+(estado.semana[f.id]>=0?'+':'')+estado.semana[f.id]+'</b></div></div>'+
+        '<div class="goal"><div class="goal-bar"><div class="goal-fill" style="width:'+pctMeta+'%"></div></div>'+
+          '<div class="goal-txt"><span>Meta '+META+' — faltam '+Math.max(0,META-pts)+'</span>'+
+          '<span class="reward" onclick="editarPremio(\''+f.id+'\')">🎁 '+escH(estado.premios[f.id])+' ✎</span></div></div>'+
+        tarefasHtml+
+        '<button class="btn swear" onclick="palavrao(\''+f.id+'\')">🤬 Falou palavrão (−'+PONTO+')</button>'+
+        '<div class="punish-box"><div class="punish-title">📵 Punição — sem telefone</div>'+activeBox+punishStatus+
+          '<div class="prow">'+(ativo?'<button class="btn free-btn" onclick="liberar(\''+f.id+'\')">Liberar telefone</button>':
+                   '<button class="btn punish-btn" onclick="punir(\''+f.id+'\')">Registrar punição</button>')+'</div></div>';
+      kids.appendChild(card);
+    });
+    const log=document.getElementById("logList");
+    if(!estado.historico.length){log.innerHTML='<div class="empty">Nenhum registro ainda.</div>';}
+    else{log.innerHTML=estado.historico.slice(0,80).map(h=>{
+      const nome=(FILHOS.find(f=>f.id===h.filho)||{nome:"?"}).nome;let p="";
+      if(h.pts>0)p='<span class="log-pts log-pos">+'+h.pts+'</span>';
+      else if(h.pts<0)p='<span class="log-pts log-neg">'+h.pts+'</span>';
+      return '<div class="log-item"><span><b>'+nome+'</b> — '+escH(h.texto)+'</span>'+
+        '<span class="log-when">'+h.quando+'</span>'+p+'</div>';}).join("");}
+    renderPlanos();
+  }
+  function tickCountdowns(){document.querySelectorAll(".cd").forEach(el=>{
+    const fim=+el.dataset.fim,ms=fim-Date.now();if(ms<=0){render();return;}
+    const s=Math.floor(ms/1000),H=Math.floor(s/3600),M=Math.floor(s%3600/60),S=s%60;
+    el.textContent=String(H).padStart(2,"0")+":"+String(M).padStart(2,"0")+":"+String(S).padStart(2,"0");});}
+  setInterval(tickCountdowns,1000);
+  function festa(){const c=document.getElementById("confetti"),ctx=c.getContext("2d");
+    c.width=innerWidth;c.height=innerHeight;
+    const cols=["#22c55e","#ec4899","#a78bfa","#facc15","#38bdf8","#fb7185"];
+    let parts=Array.from({length:150},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height,
+      r:4+Math.random()*6,vy:2+Math.random()*4,vx:-2+Math.random()*4,col:cols[Math.floor(Math.random()*cols.length)],rot:Math.random()*6}));
+    let t=0;(function anim(){t++;ctx.clearRect(0,0,c.width,c.height);
+      parts.forEach(p=>{p.y+=p.vy;p.x+=p.vx;p.rot+=.1;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+        ctx.fillStyle=p.col;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);ctx.restore();});
+      if(t<160)requestAnimationFrame(anim);else ctx.clearRect(0,0,c.width,c.height);})();}
+  function esc(s){return s.replace(/'/g,"\\'");}
+  function escH(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function limparHistorico(){if(confirm("Apagar todo o histórico? Pontos e punições continuam.")){estado.historico=[];salvar();}}
+  function zerarTudo(){if(confirm("Zerar TUDO (pontos, semana, punições, notas, planos e histórico)?")){
+    const som=estado.som;estado=padrao();estado.som=som;salvar();updateNotas();}}
+  document.getElementById("today").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+  document.getElementById("soundBtn").textContent=estado.som?"🔊 Som: ligado":"🔇 Som: desligado";
+  (function boot(){
+    try{
+      const code=LS.get(CODEKEY), localOnly=LS.get(LOCALKEY);
+      if(code){SYNC.code=code;SYNC.mode="sync";entrarNoApp();}
+      else if(localOnly){SYNC.mode="local";entrarNoApp();}
+    }catch(e){}
+  })();
+</script>
+</body>
+</html>
